@@ -63,8 +63,8 @@ export default abstract class BasePlot<T extends PlotConfig = PlotConfig> {
   }
 
   /** 自定义组件参与padding */
-  public resgiterPadding(component: Element) {
-    this.paddingController.resgiterPadding(component);
+  public registerPadding(component: Element) {
+    this.paddingController.registerPadding(component);
   }
 
   /** 修改数据 */

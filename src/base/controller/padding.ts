@@ -16,7 +16,7 @@ export default class PaddingController {
     _.assign(this, cfg);
   }
 
-  public resgiterPadding(component) {
+  public registerPadding(component) {
     this.paddingComponents.push(component);
   }
 
