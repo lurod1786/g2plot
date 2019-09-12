@@ -7,12 +7,11 @@ import { extractScale } from '../../util/scale';
 import './animation/clipInWithData';
 import responsiveMethods from './applyResponsive/index';
 import './applyResponsive/theme';
-import './applyResponsive/theme';
 import TimeGroupAnnotation from './component/annotation/timeGroupAnnotation';
 import './component/label/line-label';
 import './component/label/point-label';
 import * as EventParser from './event';
-import { LineActive, LineSelect, Range } from './interaction/index';
+import { LineActive, LineSelect, Range } from './interaction';
 import './theme';
 
 export interface LineStyle {
@@ -171,10 +170,8 @@ export default class Line extends BasePlot<LineConfig> {
     const props = this._initialProps;
     // 加入默认交互
     const interactions = this.plot.get('interactions');
-    const lineActive = new LineActive({ view: this.plot });
-    interactions.lineActive = lineActive;
-    const lineSelect = new LineSelect({ view: this.plot });
-    interactions.lineSelect = lineSelect;
+    interactions.lineActive = new LineActive({ view: this.plot });
+    interactions.lineSelect = new LineSelect({ view: this.plot });
     /** 加入其它交互 */
     const interactionProps = props.interactions;
     _.each(interactionProps, (i) => {
@@ -202,12 +199,12 @@ export default class Line extends BasePlot<LineConfig> {
     }
   }
 
-  protected _afterRender(){
+  protected _afterRender() {
     super._afterRender();
     const props = this._initialProps;
-     // 响应式
-     if (props.responsive && props.padding !== 'auto') {
-        this._applyResponsive('afterRender');
+    // 响应式
+    if (props.responsive && props.padding !== 'auto') {
+      this._applyResponsive('afterRender');
     }
   }
 
@@ -216,8 +213,7 @@ export default class Line extends BasePlot<LineConfig> {
     document.body.appendChild(container);
     const padding = props.padding;
     this.plot.once('afterrender', () => {
-      const range = new Range({ view: this.plot, container, padding });
-      interactions.range = range;
+      interactions.range = new Range({ view: this.plot, container, padding });
     });
   }
 

@@ -47,10 +47,7 @@ export default class AxisParser {
     const themeConfig = theme.axis[this.dim];
     const config = _.deepMix({}, themeConfig, propsConfig);
     this.localProps = config;
-    if (config.visible) {
-      return true;
-    }
-    return false;
+    return !!config.visible;
   }
 
   private _lineParser() {
@@ -96,11 +93,7 @@ export default class AxisParser {
   private _titleParser() {
     const titleConfig: DataPointType = { ...this.localProps.title };
 
-    if (!this.localProps.title.visible) {
-      this.config.showTitle = false;
-    } else {
-      this.config.showTitle = true;
-    }
+    this.config.showTitle = this.localProps.title.visible;
 
     if (this.localProps.title.style) {
       titleConfig.textStyle = this.localProps.title.style;
@@ -114,9 +107,6 @@ export default class AxisParser {
   }
 
   private _isVisible(name) {
-    if (this.localProps[name] && this.localProps[name].visible) {
-      return true;
-    }
-    return false;
+    return !!(this.localProps[name] && this.localProps[name].visible);
   }
 }

@@ -286,15 +286,13 @@ export default abstract class BasePlot<T extends PlotConfig = PlotConfig> {
   }
 
   protected _events(eventParser?): void {
-    const props = this._initialProps;
-    if (props.events) {
-      const events = props.events;
-      const eventmap = eventParser ? eventParser.EVENT_MAP : EVENT_MAP;
+    if (this._initialProps.events) {
+      const events = this._initialProps.events;
+      const eventMap = eventParser ? eventParser.EVENT_MAP : EVENT_MAP;
       _.each(events, (e, k) => {
         if (_.isFunction(e)) {
-          const eventName = eventmap[e.name] || k;
-          const handler = e;
-          onEvent(this, eventName, handler);
+          const eventName = _.get(eventMap, [e.name], k);
+          onEvent(this, eventName, e);
         }
       });
     }
@@ -397,16 +395,12 @@ export default abstract class BasePlot<T extends PlotConfig = PlotConfig> {
     const padding = this.paddingController.getPadding();
     const width = this.canvasController.width;
     const height = this.canvasController.height;
-    const top = padding[0];
-    const right = padding[1];
-    const bottom = padding[2];
-    const left = padding[3];
+    const [top, right, bottom, left] = padding;
     return new BBox(left, top, width - left - right, height - top - bottom);
   }
 
   // view range 去除title & description所占的空间
   private _getViewMargin() {
-    const props = this._initialProps;
     const boxes: DataPointType[] = [];
     if (this.title) {
       boxes.push(this.title.getBBox());
@@ -417,16 +411,11 @@ export default abstract class BasePlot<T extends PlotConfig = PlotConfig> {
     if (boxes.length === 0) {
       return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
     } else {
-      let minX = Infinity;
-      let maxX = -Infinity;
-      let minY = Infinity;
-      let maxY = -Infinity;
-      _.each(boxes, (box: DataPointType) => {
-        minX = Math.min(box.minX, minX);
-        maxX = Math.max(box.maxX, maxX);
-        minY = Math.min(box.minY, minY);
-        maxY = Math.max(box.maxY, maxY);
-      });
+      const minX = Math.min(...boxes.map((box: BBox) => box.minX));
+      const maxX = Math.max(...boxes.map((box: BBox) => box.maxX));
+      const minY = Math.min(...boxes.map((box: BBox) => box.minY));
+      const maxY = Math.max(...boxes.map((box: BBox) => box.maxY));
+
       const bbox = { minX, maxX, minY, maxY };
       if (this.description) {
         const legendPosition = this._getLegendPosition();
@@ -443,8 +432,7 @@ export default abstract class BasePlot<T extends PlotConfig = PlotConfig> {
   private _getLegendPosition() {
     const props = this._initialProps;
     if (props.legend && props.legend.position) {
-      const position = props.legend.position;
-      return position;
+      return props.legend.position;
     }
     return 'bottom-center';
   }
